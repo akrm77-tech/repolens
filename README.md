@@ -160,9 +160,12 @@ RepoLens is an early usable alpha. Regex extraction can miss advanced syntax and
 The highest-value contributions are language fixtures, parser precision, localized labels, CI integrations, and real-world bug reports. Before opening a pull request:
 
 ```bash
-python -m pip install -e . pytest
+python -m pip install -e '.[dev]'
 pytest
 python -m compileall -q src
+ruff check src tests
+ruff format --check src tests
+mypy src tests
 ```
 
 Please keep the core dependency-light, offline by default, and free of telemetry. See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).

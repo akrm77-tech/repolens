@@ -1,7 +1,12 @@
 from __future__ import annotations
-import argparse, json, sys
+
+import argparse
+import json
+import sys
 from pathlib import Path
+
 from .core import diff, render_markdown, scan
+
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="repolens", description="Local-first repository intelligence")
@@ -14,26 +19,63 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--against", type=Path, help="previous RepoLens JSON snapshot")
     return p
 
+
 def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
     try:
         current = scan(args.path)
         if args.command == "scan":
-            payload = current.to_dict() if args.format == "json" else render_markdown(current, args.lang)
+            payload = (
+                current.to_dict() if args.format == "json" else render_markdown(current, args.lang)
+            )
         elif args.command == "query":
-            if not args.query: raise ValueError("query requires --query")
-            payload = json.dumps([{"path": f.path, "language": f.language, "symbols": [s.name for s in f.symbols]} for f in current.find(args.query)], ensure_ascii=False, indent=2)
+            if not args.query:
+                raise ValueError("query requires --query")
+            payload = json.dumps(
+                [
+                    {
+                        "path": f.path,
+                        "language": f.language,
+                        "symbols": [s.name for s in f.symbols],
+                    }
+                    for f in current.find(args.query)
+                ],
+                ensure_ascii=False,
+                indent=2,
+            )
         else:
-            if not args.against: raise ValueError("diff requires --against SNAPSHOT.json")
+            if not args.against:
+                raise ValueError("diff requires --against SNAPSHOT.json")
             old_data = json.loads(args.against.read_text(encoding="utf-8"))
             from .core import FileNode, RepositoryIndex, Symbol
-            old = RepositoryIndex(old_data["root"], old_data.get("generated_at", ""), [FileNode(f["path"], f["language"], f["sha256"], f["lines"], [Symbol(**s) for s in f.get("symbols", [])], f.get("imports", [])) for f in old_data["files"]])
+
+            old = RepositoryIndex(
+                old_data["root"],
+                old_data.get("generated_at", ""),
+                [
+                    FileNode(
+                        f["path"],
+                        f["language"],
+                        f["sha256"],
+                        f["lines"],
+                        [Symbol(**s) for s in f.get("symbols", [])],
+                        f.get("imports", []),
+                    )
+                    for f in old_data["files"]
+                ],
+            )
             payload = json.dumps(diff(old, current), ensure_ascii=False, indent=2)
-        if isinstance(payload, dict): payload = json.dumps(payload, ensure_ascii=False, indent=2)
-        if args.out: args.out.write_text(payload, encoding="utf-8")
-        else: print(payload, end="" if payload.endswith("\n") else "\n")
+        if isinstance(payload, dict):
+            payload = json.dumps(payload, ensure_ascii=False, indent=2)
+        if args.out:
+            args.out.write_text(payload, encoding="utf-8")
+        else:
+            print(payload, end="" if payload.endswith("\n") else "\n")
         return 0
     except (OSError, ValueError, json.JSONDecodeError) as exc:
-        print(f"repolens: error: {exc}", file=sys.stderr); return 2
+        print(f"repolens: error: {exc}", file=sys.stderr)
+        return 2
 
-if __name__ == "__main__": raise SystemExit(main())
+
+if __name__ == "__main__":
+    raise SystemExit(main())
