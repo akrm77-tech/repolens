@@ -1,0 +1,38 @@
+name: Feature request
+description: Suggest a focused improvement to the repository intelligence workflow
+title: "feat: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: What real workflow is currently difficult?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe the smallest useful version of the feature.
+    validations:
+      required: true
+  - type: textarea
+    id: fixture
+    attributes:
+      label: Example repository or fixture
+      description: Link to a public example if available. Do not include private source.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Language support
+        - CLI
+        - JSON schema
+        - Markdown localization
+        - GitHub Actions
+        - MCP
+        - Documentation
+    validations:
+      required: true

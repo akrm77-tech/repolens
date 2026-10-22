@@ -39,6 +39,13 @@ repolens diff ./your-repo --against .repolens.json
 
 The first command works offline. No account, hosted model, telemetry, or source upload is required.
 
+For a zero-risk first run, use the included [sample project](examples/sample-project):
+
+```bash
+repolens scan examples/sample-project --lang en
+repolens query examples/sample-project --query greet
+```
+
 ## Why RepoLens
 
 Modern repositories are too complex for a plain file tree and too sensitive to send blindly to a hosted model. RepoLens occupies the useful middle: it creates a small, portable evidence layer that can be reviewed in a pull request, translated for a global team, or passed to an agent through a future MCP adapter.
@@ -158,7 +165,7 @@ pytest
 python -m compileall -q src
 ```
 
-Please keep the core dependency-light, offline by default, and free of telemetry. See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
+Please keep the core dependency-light, offline by default, and free of telemetry. See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
 ## Launch and community
 
